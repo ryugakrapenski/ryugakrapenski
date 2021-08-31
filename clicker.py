@@ -6,6 +6,9 @@ import time
 import win32api, win32con
 from PIL import Image, ImageTk, ImageGrab
 
+#PRESS DELETE TO STOP THE CLICKER AND BE ABLE TO SET NEW HOTKEY
+#DO NOT PRESS DELETE WHEN MENU IS OPEN OR ELSE IT WILL CRASH
+
 #Click Function
 def click():
     win32api.mouse_event(win32con.MOUSEEVENTF_LEFTDOWN, 0, 0)
