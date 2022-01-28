@@ -1,0 +1,55 @@
+import keyboard
+import time
+from tkinter import *
+
+#Basic Stuff
+root = Tk()
+root.geometry('1920x1080')
+root.title('Wordle')
+C = Canvas(root, height = '1080', width = '1920', bg = 'gray')
+C.pack()
+
+#Defining word
+word = 'WORDLE'
+
+#Fonts
+large_font = ('Verdana',30)
+small_font = ('Verdana',10)
+
+#Max length of entry
+var = StringVar()
+max_len = 5
+def on_write(*args):
+    s = var.get()
+    if len(s) > max_len:
+        var.set(s[:max_len])
+var.trace_variable("w", on_write)
+
+#Entry Box
+word_guess = Entry(root, font = large_font, textvariable = var, justify = 'center')
+C.create_window(960, 100, width = 380, height = 50, window = word_guess)
+
+#checking guess
+def getguess():
+    x1 = word_guess.get()
+    #If no letters in guess
+    if len(x1) < 1:
+        no_letters = Label(text='Please enter your guess!', font=small_font, )
+        def task():
+            no_letters.destroy()
+            root.after(2000,task)
+
+        C.create_window(960, 200, window=no_letters)
+        root.after(2000, task)
+
+    else:
+        x2 = x1.upper()
+        if x2 == word:
+            print('yay')
+        else:
+            print('boo')
+
+guess_submit = Button(text='Submit!', font = small_font,  command=getguess)
+C.create_window(960, 160, window=guess_submit)
+
+root.mainloop()
