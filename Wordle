@@ -1,6 +1,9 @@
 import keyboard
 import time
 from tkinter import *
+from playsound import playsound
+import os
+import random
 
 #Basic Stuff
 root = Tk()
@@ -10,11 +13,34 @@ C = Canvas(root, height = '1080', width = '1920', bg = 'gray')
 C.pack()
 
 #Defining word
-word = 'WORDLE'
+wordbank = ['EIGHT', 'GIVEN', 'SUGAR', 'PERKY', 'CLANK', 'THIEF', 'TREND', 'CHANT', 'MODEL', 'SLOPE', 'HEAVE']
+word = random.choice(wordbank)
+print(word)
 
 #Fonts
 large_font = ('Verdana',30)
+directions_font = ('Verdana', 15)
 small_font = ('Verdana',10)
+answer_correct_font = ('Verdana', 100)
+
+directions = Label(text = 'Welcome to WORDLE! \n'
+                          'You will have to guess \n'
+                          '5 letter word with only 6 guesses, \n'
+                          ' and your only tools are \n knowing if they are\n'
+                          ' not in the word (Gray),'
+                          ' somewhere in the word (Yellow) \n'
+                          'or in the word and in the right spot (Green)', font = directions_font)
+
+directions1 = Label(text = 'Welcome to WORDLE! \n'
+                          'You will have to guess \n'
+                          '5 letter word with only 6 guesses, \n'
+                          ' and your only tools are \n knowing if they are\n'
+                          ' not in the word (Gray),'
+                          ' somewhere in the word (Yellow) \n'
+                          'or in the word and in the right spot (Green)', font = directions_font)
+
+C.create_window (340, 150, window = directions)
+C.create_window (1580, 150, window = directions1)
 
 #Max length of entry
 var = StringVar()
@@ -29,12 +55,28 @@ var.trace_variable("w", on_write)
 word_guess = Entry(root, font = large_font, textvariable = var, justify = 'center')
 C.create_window(960, 100, width = 380, height = 50, window = word_guess)
 
-#checking guess
+# Z will be the number letter and how far across
+global z
+z = -1
+
+#Checking guess
 def getguess():
     x1 = word_guess.get()
+    word_guess.delete(0, END)
+    global z
+    if z>4:
+        def endmessagetask():
+            time.sleep(5)
+            exit(12345)
+            root.after(2500, endmessagetask)
+        exit_message = Label (text = 'Sorry, the word was ' + word + ', Better luck next time', font = small_font)
+        C.create_window(960, 980, window = exit_message)
+        root.after(2500, endmessagetask)
+
+
     #If no letters in guess
-    if len(x1) < 1:
-        no_letters = Label(text='Please enter your guess!', font=small_font, )
+    if len(x1) < 5:
+        no_letters = Label(text='Please enter a 5 lettered word!!', font=small_font, )
         def task():
             no_letters.destroy()
             root.after(2000,task)
@@ -42,12 +84,62 @@ def getguess():
         C.create_window(960, 200, window=no_letters)
         root.after(2000, task)
 
+
     else:
+        z = z + 1
         x2 = x1.upper()
+        print(x2)
+        #If you get it right
         if x2 == word:
-            print('yay')
+            #Exiting after getting correct answer
+            def destroy_window():
+                time.sleep(5)
+                exit(135)
+                root.after(5000, destroy_window)
+
+            x5 = 760
+
+            for i in range(5):
+                x = i
+                print(x)
+                answer_correct = Label(text=word[x], font=answer_correct_font, bg='green')
+                C.create_window(x5, 540, window = answer_correct)
+                x5 = x5 + 100
+
+            root.after(10, destroy_window)
         else:
-            print('boo')
+            # Number of wrong guesses, will dicate y level
+            w = 0
+
+            for i in range(5):
+
+                print(i)
+                l1 = x1[i]
+                l2 = l1.upper()
+                print(l2)
+
+                if l2 in word and l2 == word[i]:
+                    print('green')
+                    letter = Label(text = l2, font = large_font, bg = 'green')
+                    C.create_window(775 + w*100, 250 + z*100, window = letter)
+
+                    w = w+1
+
+                else:
+
+                    if l2 in word:
+                        print('yellow')
+
+                        letter = Label(text=l2, font=large_font, bg='yellow')
+                        C.create_window(775 + w * 100, 250 + z * 100, window=letter)
+                        w = w+1
+
+
+                    else:
+                        print('black')
+                        letter = Label(text=l2, font=large_font, bg='gray30')
+                        C.create_window(775 + w * 100, 250 + z * 100, window=letter)
+                        w = w+1
 
 guess_submit = Button(text='Submit!', font = small_font,  command=getguess)
 C.create_window(960, 160, window=guess_submit)
